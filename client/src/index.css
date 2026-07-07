@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+/* ── Tailwind v4 Design Tokens ─────────────────────────────── */
+@theme {
+  /* Brand color palette (indigo-blue) */
+  --color-brand-50:  #f5f7ff;
+  --color-brand-100: #ebf0ff;
+  --color-brand-200: #d6e0ff;
+  --color-brand-300: #b3c7ff;
+  --color-brand-400: #85a3ff;
+  --color-brand-500: #5275ff;
+  --color-brand-600: #2e4cff;
+  --color-brand-700: #1b32eb;
+  --color-brand-800: #1628c2;
+  --color-brand-900: #15259c;
+  --color-brand-950: #0d155c;
+
+  /* Custom fonts */
+  --font-family-sans:    'Inter', sans-serif;
+  --font-family-display: 'Outfit', sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: #020617; /* slate-950 */
+    color: #f1f5f9;            /* slate-100 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+/* Glassmorphism utility components */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+  background: rgba(30, 41, 59, 0.35);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  background: rgba(30, 41, 59, 0.45);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+.glass-input {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  transition: all 0.2s ease-in-out;
+}
+
+.glass-input:focus {
+  border-color: rgba(82, 117, 255, 0.6);
+  box-shadow: 0 0 0 2px rgba(82, 117, 255, 0.25);
+  outline: none;
+}
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Pipeline Board Scrollbar */
+.pipeline-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+/* Pulse Glow Effects */
+.glow-primary {
+  box-shadow: 0 0 20px -5px rgba(82, 117, 255, 0.4);
+}
+
+/* Modal entrance animation */
+@keyframes modal-enter-kf {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-enter {
+  animation: modal-enter-kf 0.18s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Fade up animation for page sections */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-up {
+  animation: fade-up 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Gradient text utility */
+.gradient-text {
+  background: linear-gradient(135deg, #5275ff 0%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Status badge fallback */
+.status-badge-default {
+  background: rgba(100, 116, 139, 0.1);
+  color: #94a3b8;
+  border: 1px solid rgba(100, 116, 139, 0.2);
+}
