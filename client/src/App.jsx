@@ -1,29 +1,39 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute';
-import Layout from './components/Layout';
-import { ToastProvider } from './components/Toast';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Layout from "./components/Layout";
+import { ToastProvider } from "./components/Toast";
 
 // Auth Pages
-import Login from './pages/auth/Login';
-import RegisterCompany from './pages/auth/RegisterCompany';
-import ForgotPassword from './pages/auth/ForgotPassword';
-import ResetPassword from './pages/auth/ResetPassword';
+import Login from "./pages/auth/Login";
+import RegisterCompany from "./pages/auth/RegisterCompany";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 
 // App Pages
-import Dashboard from './pages/dashboard/Dashboard';
-import LeadList from './pages/leads/LeadList';
-import LeadDetail from './pages/leads/LeadDetail';
-import UserList from './pages/users/UserList';
-import CompanySettings from './pages/settings/CompanySettings';
+import Dashboard from "./pages/dashboard/Dashboard";
+import AnalyticsPage from "./pages/dashboard/AnalyticsPage";
+import ReportsPage from "./pages/dashboard/ReportsPage";
+import LeadList from "./pages/leads/LeadList";
+import LeadDetail from "./pages/leads/LeadDetail";
+import UserList from "./pages/users/UserList";
+import CompanySettings from "./pages/settings/CompanySettings";
+import CompaniesPage from "./pages/settings/CompaniesPage";
 
 // CRM Pages
-import CrmDashboard from './pages/crm/CrmDashboard';
-import CreateLeadPage from './pages/crm/CreateLeadPage';
-import Meetings from './pages/crm/Meetings';
-import ConvertedLeads from './pages/crm/ConvertedLeads';
-import LostLeads from './pages/crm/LostLeads';
-import PipelineBoard from './pages/crm/PipelineBoard';
+import CrmDashboard from "./pages/crm/CrmDashboard";
+import CreateLeadPage from "./pages/crm/CreateLeadPage";
+import Meetings from "./pages/crm/Meetings";
+import ConvertedLeads from "./pages/crm/ConvertedLeads";
+import LostLeads from "./pages/crm/LostLeads";
+import PipelineBoard from "./pages/crm/PipelineBoard";
+import ClientsPage from "./pages/crm/ClientsPage";
+import CommunicationsPage from "./pages/crm/CommunicationsPage";
 
 export default function App() {
   return (
@@ -42,20 +52,31 @@ export default function App() {
               <Route element={<Layout />}>
                 {/* Main Routes */}
                 <Route path="/" element={<Dashboard />} />
+                <Route path="/analytics" element={<AnalyticsPage />} />
+                <Route path="/reports" element={<ReportsPage />} />
                 <Route path="/leads" element={<LeadList />} />
                 <Route path="/leads/:id" element={<LeadDetail />} />
                 <Route path="/users" element={<UserList />} />
                 <Route path="/settings" element={<CompanySettings />} />
+                <Route path="/settings/companies" element={<CompaniesPage />} />
 
                 {/* CRM Routes */}
                 <Route path="/crm/dashboard" element={<CrmDashboard />} />
                 <Route path="/crm/pipeline" element={<PipelineBoard />} />
                 <Route path="/crm/leads/new" element={<CreateLeadPage />} />
                 <Route path="/crm/meetings" element={<Meetings />} />
-                <Route path="/crm/leads/converted" element={<ConvertedLeads />} />
+                <Route
+                  path="/crm/leads/converted"
+                  element={<ConvertedLeads />}
+                />
                 <Route path="/crm/leads/lost" element={<LostLeads />} />
                 <Route path="/crm/leads" element={<LeadList />} />
-                <Route path="/crm" element={<Navigate to="/crm/dashboard" replace />} />
+                <Route path="/crm/clients" element={<ClientsPage />} />
+                <Route path="/crm/communications" element={<CommunicationsPage />} />
+                <Route
+                  path="/crm"
+                  element={<Navigate to="/crm/dashboard" replace />}
+                />
               </Route>
             </Route>
 
