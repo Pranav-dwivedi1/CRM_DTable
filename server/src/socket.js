@@ -50,10 +50,14 @@ const initSocket = (server) => {
   });
 
   io.on('connection', (socket) => {
-    const { companyId } = socket.user;
+    const { companyId, _id } = socket.user;
     if (companyId) {
       // Join the company-scoped room so events stay tenant-isolated
       socket.join(`company:${companyId}`);
+    }
+    if (_id) {
+      // Join the user-scoped room for direct notifications
+      socket.join(`user:${_id}`);
     }
 
     socket.on('disconnect', () => {

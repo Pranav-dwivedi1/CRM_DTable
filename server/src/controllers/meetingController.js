@@ -2,6 +2,7 @@ const Meeting = require('../models/Meeting');
 const Lead = require('../models/Lead');
 const User = require('../models/User');
 const ActivityLog = require('../models/ActivityLog');
+const { createNotification } = require('../services/notificationService');
 
 const getMeetings = async (req, res) => {
   try {
@@ -97,6 +98,21 @@ const createMeeting = async (req, res) => {
       companyId
     });
 
+    // Notify attendees
+    if (meeting.attendees && meeting.attendees.length > 0) {
+      for (const attendeeId of meeting.attendees) {
+        if (attendeeId.toString() !== _id.toString()) {
+          await createNotification({
+            companyId,
+            userId: attendeeId,
+            title: 'Meeting Scheduled',
+            message: `You have a new meeting: "${meeting.title}" scheduled for ${new Date(meeting.scheduledAt).toLocaleString()}`,
+            type: 'meeting_reminder'
+          });
+        }
+      }
+    }
+
     res.status(201).json({
       success: true,
       data: meeting
@@ -159,6 +175,31 @@ const updateMeeting = async (req, res) => {
       },
       companyId: req.user.companyId
     });
+
+    // Notify attendees of changes
+    if (meeting.attendees && meeting.attendees.length > 0) {
+      const isCancelled = status === 'Cancelled' && originalStatus !== 'Cancelled';
+      const isRescheduled = scheduledAt && new Date(scheduledAt).getTime() !== new Date(meeting.scheduledAt).getTime();
+      
+      if (isCancelled || isRescheduled) {
+        const titleText = isCancelled ? 'Meeting Cancelled' : 'Meeting Rescheduled';
+        const msgText = isCancelled 
+          ? `The meeting "${meeting.title}" has been cancelled.` 
+          : `The meeting "${meeting.title}" has been rescheduled for ${new Date(meeting.scheduledAt).toLocaleString()}.`;
+
+        for (const attendeeId of meeting.attendees) {
+          if (attendeeId.toString() !== req.user._id.toString()) {
+            await createNotification({
+              companyId: req.user.companyId,
+              userId: attendeeId,
+              title: titleText,
+              message: msgText,
+              type: 'meeting_reminder'
+            });
+          }
+        }
+      }
+    }
 
     res.status(200).json({
       success: true,

@@ -4,6 +4,7 @@ const ActivityLog = require('../models/ActivityLog');
 const Meeting = require('../models/Meeting');
 const Company = require('../models/Company');
 const { getIO } = require('../socket');
+const { createNotification } = require('../services/notificationService');
 
 const logLeadActivity = async (req, leadId, action, metadata) => {
   try {
@@ -202,6 +203,17 @@ const createLead = async (req, res) => {
       assignedTo: targetAssignedTo
     });
 
+    // Notify assignee
+    if (newLead.assignedTo && newLead.assignedTo.toString() !== _id.toString()) {
+      await createNotification({
+        companyId,
+        userId: newLead.assignedTo,
+        title: 'New Lead Assigned',
+        message: `You have been assigned a new lead: ${newLead.name}`,
+        type: 'lead_assignment'
+      });
+    }
+
     res.status(201).json({ success: true, data: newLead });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -257,6 +269,30 @@ const updateLead = async (req, res) => {
     if (Object.keys(changes).length > 0) {
       await lead.save();
       await logLeadActivity(req, lead._id, 'LEAD_UPDATED', changes);
+
+      // Trigger notification if status changed to Won
+      if (changes.status && changes.status.to === 'Won' && changes.status.from !== 'Won') {
+        if (lead.assignedTo) {
+          await createNotification({
+            companyId: lead.companyId,
+            userId: lead.assignedTo,
+            title: 'Revenue Achieved!',
+            message: `Congratulations! Deal won for lead: ${lead.name} ($${lead.estimatedValue || 0})`,
+            type: 'revenue_achievement'
+          });
+
+          const assignedUser = await User.findById(lead.assignedTo).setOptions({ bypassTenant: true });
+          if (assignedUser && assignedUser.managerId) {
+            await createNotification({
+              companyId: lead.companyId,
+              userId: assignedUser.managerId,
+              title: 'Team Revenue Achievement!',
+              message: `${assignedUser.name} won a deal: ${lead.name} ($${lead.estimatedValue || 0})`,
+              type: 'revenue_achievement'
+            });
+          }
+        }
+      }
     }
 
     res.status(200).json({ success: true, data: lead });
@@ -309,6 +345,16 @@ const assignLead = async (req, res) => {
       from: previousAssignee,
       to: assignedTo
     });
+
+    if (assignedTo.toString() !== previousAssignee?.toString()) {
+      await createNotification({
+        companyId: lead.companyId,
+        userId: assignedTo,
+        title: 'Lead Reassigned',
+        message: `You have been assigned the lead: ${lead.name}`,
+        type: 'lead_assignment'
+      });
+    }
 
     res.status(200).json({ success: true, message: 'Lead successfully reassigned', data: lead });
   } catch (error) {
@@ -471,6 +517,30 @@ const changeLeadStatus = async (req, res) => {
       targetId: lead._id,
       metadata: { status: { from: oldStatus, to: status }, lostReason: lostReason || undefined }
     });
+
+    // Trigger notification if status changed to Won
+    if (status === 'Won' && oldStatus !== 'Won') {
+      if (lead.assignedTo) {
+        await createNotification({
+          companyId: lead.companyId,
+          userId: lead.assignedTo,
+          title: 'Revenue Achieved!',
+          message: `Congratulations! Deal won for lead: ${lead.name} ($${lead.estimatedValue || 0})`,
+          type: 'revenue_achievement'
+        });
+
+        const assignedUser = await User.findById(lead.assignedTo).setOptions({ bypassTenant: true });
+        if (assignedUser && assignedUser.managerId) {
+          await createNotification({
+            companyId: lead.companyId,
+            userId: assignedUser.managerId,
+            title: 'Team Revenue Achievement!',
+            message: `${assignedUser.name} won a deal: ${lead.name} ($${lead.estimatedValue || 0})`,
+            type: 'revenue_achievement'
+          });
+        }
+      }
+    }
 
     // Emit real-time event to all clients in the company room
     try {

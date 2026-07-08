@@ -9,8 +9,13 @@ const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const leadRoutes = require("./routes/leadRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const analyticsRoutes = require("./routes/analyticsRoutes");
 const companyRoutes = require("./routes/companyRoutes");
 const meetingRoutes = require("./routes/meetingRoutes");
+const messageRoutes = require("./routes/messageRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
+const searchRoutes = require("./routes/searchRoutes");
+const reportRoutes = require("./routes/reportRoutes");
 
 const app = express();
 
@@ -67,14 +72,18 @@ app.get("/health", (req, res) => {
   });
 });
 
-
 // Route mapping
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/leads", leadRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/analytics", analyticsRoutes);
 app.use("/api/company", companyRoutes);
 app.use("/api/meetings", meetingRoutes);
+app.use("/api/messages", messageRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/search", searchRoutes);
+app.use("/api/reports", reportRoutes);
 
 // Fallback 404 handler
 app.use((req, res, next) => {

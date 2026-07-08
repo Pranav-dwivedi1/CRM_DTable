@@ -21,13 +21,12 @@ const setupTestDB = () => {
   afterEach(async () => {
     const collections = mongoose.connection.collections;
     for (const key in collections) {
-      await collections[key].deleteMany();
+      await collections[key].deleteMany({});
     }
   });
 
-  afterAll(async () => {
-    await mongoose.disconnect();
-  });
+  // Keeping connection open across test suites to prevent reconnection hangs.
+  // Jest's process teardown handles final cleanup.
 };
 
 module.exports = {
